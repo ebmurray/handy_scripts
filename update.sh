@@ -2,7 +2,7 @@
 # Update script for apt update and clean, then checks for flatpak and snap (ebmurray)
 
 # Set default vars
-cver="1.03"
+cver="1.04"
 reldate="15 Apr 2022"
 tmpfile="/tmp/upd_sh-$(date +%Y%m%d%H).txt"
 script_url="https://raw.githubusercontent.com/ebmurray/handy_scripts/main/sh/update.sh"
