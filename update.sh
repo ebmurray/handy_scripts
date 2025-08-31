@@ -1,9 +1,12 @@
 #!/bin/bash
 # Update script for apt update and clean, then checks for flatpak and snap (ebmurray)
 
+# CHANGELOG:
+# Added checks for pacman, yum, dpkg, rpm, pip.
+
 # Set default vars
-cver="1.03"
-reldate="15 Apr 2022"
+cver="1.04"
+reldate="01 Sept 2025"
 tmpfile="/tmp/upd_sh-$(date +%Y%m%d%H).txt"
 script_url="https://raw.githubusercontent.com/ebmurray/handy_scripts/main/update.sh"
 
@@ -61,6 +64,36 @@ function appcheck () {
 		aptinst=0 ; aptproc="" ;
     fi
 
+    if [ "$(which pacman|awk -F/ '{print $NF}')" == "pacman" ] ; then
+        pacinst=1 ; pacproc=" pacman" ;
+    else
+        pacinst=0 ; pacproc="" ;
+    fi
+
+    if [ "$(which dpkg|awk -F/ '{print $NF}')" == "dpkg" ] ; then
+        dpkginst=1 ; dpkgproc=" dpkg" ;
+    else
+        dpkginst=0 ; dpkgproc="" ;
+    fi
+
+    if [ "$(which yum|awk -F/ '{print $NF}')" == "yum" ] ; then
+        yuminst=1 ; yumproc=" yum" ;
+    else
+        yuminst=0 ; yumgproc="" ;
+    fi
+
+    if [ "$(which rpm|awk -F/ '{print $NF}')" == "rpm" ] ; then
+        rpminst=1 ; rpmproc=" rpm" ;
+    else
+        rpminst=0 ; rpmgproc="" ;
+    fi
+
+    if [ "$(which pip|awk -F/ '{print $NF}')" == "pip" ] ; then
+        pipinst=1 ; pipproc=" pip" ;
+    else
+        pipinst=0 ; pipproc="" ;
+    fi
+
     if [ "$(which flatpak|awk -F/ '{print $NF}')" == "flatpak" ] ; then
         flatpakinst=1 ; flatpakproc=" flatpak" ;
 	else
@@ -76,20 +109,28 @@ function appcheck () {
 
 # Update proclamation
 function updateproc () {
-    echo "Detected & updating:$aptproc$flatpakproc$snapproc" ;
+    echo "Detected & updating:$aptproc$pacproc$dpkgproc$yumproc$prmproc$pipproc$flatpakproc$snapproc" ;
 }
 
 # Update apt
 function upd_if_found () {
     if [ "$aptinst" == "1" ] ; then
-    echo ; echo "apt update -y" ; apt update -y &&
-    echo ; echo "apt upgrade -y" ; apt upgrade -y &&
-    echo ; echo "apt dist-upgrade -Vy" ; apt dist-upgrade -Vy &&
-    echo ; echo "apt autoremove -y" ; apt autoremove -y &&
-    echo ; echo "apt autoclean" ; apt autoclean &&
-    echo ; echo "apt clean" ; apt clean &&
-    echo ; echo "apt purge" ; apt purge -y $(dpkg -l | awk '/^rc/ { print $2 }')
-    echo ; echo "Done." ;
+        echo ; echo "apt update -y" ; apt update -y &&
+        echo ; echo "apt upgrade -y" ; apt upgrade -y &&
+        echo ; echo "apt dist-upgrade -Vy" ; apt dist-upgrade -Vy &&
+        echo ; echo "apt autoremove -y" ; apt autoremove -y &&
+        echo ; echo "apt autoclean" ; apt autoclean &&
+        echo ; echo "apt clean" ; apt clean &&
+        echo ; echo "apt purge" ; apt purge -y $(dpkg -l | awk '/^rc/ { print $2 }')
+        echo ; echo "Done." ;
+    fi
+
+    if [ "$pacinst" == "1" ] ; then
+        echo ; echo "pacman -Syu" ; pacman -Syu
+    fi
+
+    if [ "$pipinst" == "1" ] ; then
+        echo ; echo "pip list -o" ; pip list -o ;
     fi
 
     if [ "$flatpakinst" == "1" ] ; then
