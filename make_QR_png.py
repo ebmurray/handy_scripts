@@ -1,3 +1,4 @@
+# make_QR_png.py version FINAL
 import os
 import time
 import qrcode
