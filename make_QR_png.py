@@ -3,10 +3,13 @@ import time
 import qrcode
 from sys import platform
 
+# vars
 timestr = time.strftime("%Y%m%d-%H%M%S")
 file_name = timestr + ".QR.png"
 
-if platform == "linux" or platform == "Linux2":
+# OS detect
+# So lnog as the Python module qrcode is installed it'll run on most OS
+if platform == "linux" or platform == "linux2":
 	OS_detected = str("Linux")
 	save_dir = os.path.join(os.environ['HOME'], "Downloads/")
 elif platform == "darwin":
