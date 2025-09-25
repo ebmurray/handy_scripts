@@ -1,4 +1,4 @@
-# make_QR_png.py version FINAL
+# make_QR_png.py version FINAL.0.1
 import os
 import time
 import qrcode
@@ -19,6 +19,9 @@ elif platform == "darwin":
 elif platform == "win32" or platform == "cygwin":
 	OS_detected = str("Windows")
 	save_dir = os.path.join(os.environ['USERPROFILE'], "Downloads\\")
+
+# Set working path:
+os.chdir(save_dir)
 
 def generate_qr_code(data, file_name):
 	qr = qrcode.QRCode(
