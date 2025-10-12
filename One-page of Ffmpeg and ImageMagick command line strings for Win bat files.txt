@@ -1,0 +1,128 @@
+dropfile_ffmpeg_to_480p24_webm.bat
+
+@echo off
+ffmpeg -y -i "%~1" -vf "fps=24,scale=-1:576:flags=lanczos" -b:v 2.5M "%~dpn1.webm"
+exit
+
+dropfile_ffmpeg_to_1080p_mp4.bat
+
+@echo off
+set hres=1080
+ffmpeg -i "%~1" -vf "scale=-1:%hres%:flags=lanczos" -c:v libx264 -crf 18 -profile:v high -level:v 4.2 -pix_fmt yuv420p -preset veryslow -c:a copy -map 0 -map_metadata -1 -brand mp42 "%~dpn1.%hres%.mp4"
+exit
+
+dropfile_ffmpeg_to_720p_mp4.bat
+
+@echo off
+set hres=720
+ffmpeg -i "%~1" -vf "scale=-1:%hres%:flags=lanczos" -c:v libx264 -crf 18 -profile:v high -level:v 4.2 -pix_fmt yuv420p -preset veryslow -c:a copy -map 0 -map_metadata -1 -brand mp42 "%~dpn1.%hres%.mp4"
+exit
+
+dropfile_ffmpeg_to_great_quality_1280-wide_movie_mp4.bat
+
+@echo off
+ffmpeg -i "%~1" -vf "fps=23.976,scale=1280:-1:flags=lanczos" -c:v libx264 -profile:v high -level:v 4.2 -preset veryslow -pix_fmt yuv420p -b:v 3920k -c:a aac -b:a 160k -map 0 -map_metadata -1 -brand mp42 -fflags +bitexact -flags:v +bitexact -flags:a +bitexact "%~dpn1.HD.mp4"
+exit
+
+dropfile_ffmpeg_to_great_quality_1920-wide_movie_mp4.bat
+
+@echo off
+ffmpeg -i "%~1" -vf "fps=23.976,scale=1920:-1:flags=lanczos" -c:v libx264 -profile:v high -level:v 4.2 -preset veryslow -pix_fmt yuv420p -b:v 3920k -c:a aac -b:a 160k -map 0 -map_metadata -1 -brand mp42 -fflags +bitexact -flags:v +bitexact -flags:a +bitexact "%~dpn1.HD.mp4"
+exit
+
+dropfile_ffmpeg_to_yt1080p60HQ_mp4.bat
+
+@echo off
+set hres=1080
+set brate=15M
+ffmpeg -i "%~1" -vf "fps=60,scale=-1:%hres%:flags=lanczos" -c:v libx264 -profile:v high -level:v 4.2 -preset veryslow -c:a aac -b:a 192k -pix_fmt yuv420p -b:v %brate% -map 0 -map_metadata -1 -brand mp42 -fflags +bitexact -flags:v +bitexact -flags:a +bitexact "%~dpn1.yt%hres%HQ.mp4"
+exit
+
+dropfile_ffmpeg_to_yt1440p60HQ_mp4_2k.bat
+
+@echo off
+set hres=1440
+set brate=30M
+ffmpeg -i "%~1" -vf "fps=60,scale=-1:%hres%:flags=lanczos" -c:v libx264 -profile:v high -level:v 4.2 -preset veryslow -c:a aac -b:a 192k -pix_fmt yuv420p -b:v %brate% -map 0 -map_metadata -1 -brand mp42 -fflags +bitexact -flags:v +bitexact -flags:a +bitexact "%~dpn1.yt%hres%HQ.mp4"
+exit
+
+dropfile_ffmpeg_to_yt2160p60HQ_mp4_4k.bat
+
+@echo off
+set hres=2160
+set brate=85M
+ffmpeg -i "%~1" -vf "fps=60,scale=-1:%hres%:flags=lanczos" -c:v libx264 -profile:v high -level:v 4.2 -preset veryslow -c:a aac -b:a 192k -pix_fmt yuv420p -b:v %brate% -map 0 -map_metadata -1 -brand mp42 -fflags +bitexact -flags:v +bitexact -flags:a +bitexact "%~dpn1.yt%hres%HQ.mp4"
+exit
+
+dropfile_ffmpeg_to_yt4320p60HQ_mp4_8k.bat
+
+@echo off
+set hres=4320
+set brate=220M
+ffmpeg -i "%~1" -vf "fps=60,scale=-1:%hres%:flags=lanczos" -c:v libx264 -profile:v high -level:v 4.2 -preset veryslow -c:a aac -b:a 192k -pix_fmt yuv420p -b:v %brate% -map 0 -map_metadata -1 -brand mp42 -fflags +bitexact -flags:v +bitexact -flags:a +bitexact "%~dpn1.yt%hres%HQ.mp4"
+exit
+
+dropfile_ffmpeg_to_yt720p60HQ_mp4.bat
+
+@echo off
+set hres=720
+set brate=9600k
+ffmpeg -i "%~1" -vf "fps=60,scale=-1:%hres%:flags=lanczos" -c:v libx264 -profile:v high -level:v 4.2 -preset veryslow -c:a aac -b:a 192k -pix_fmt yuv420p -b:v %brate% -map 0 -map_metadata -1 -brand mp42 -fflags +bitexact -flags:v +bitexact -flags:a +bitexact "%~dpn1.yt%hres%HQ.mp4"
+exit
+
+extract_audio_from_video_to_aac.bat
+
+@echo off
+ffmpeg -i "%~1" -map 0 -map -0:v -codec:a aac -b:a 129k "%~dpn1.m4a"
+exit
+
+extract_audio_from_video_to_HQ_mp3.bat
+
+@echo off
+ffmpeg -i "%~1" -map 0 -map -0:v -codec:a libmp3lame -b:a 192k "%~dpn1.mp3"
+exit
+
+extract_audio_from_video_to_mp3.bat
+
+@echo off
+ffmpeg -i "%~1" -map 0 -map -0:v -codec:a libmp3lame -b:a 128k "%~dpn1.mp3"
+exit
+
+extract_audio_from_video_to_ogg.bat
+
+@echo off
+ffmpeg -i "%~1" -map 0 -map -0:v -codec:a libopus -b:a 132k "%~dpn1.ogg"
+exit
+
+file_paths_test.bat
+
+echo path of this file name is: %~dp0
+echo file name of this file without extension is:%~n0
+echo file extention of this file is:%~x0
+echo The file name of this file is: %~nx0
+echo Whats this %~dpn0
+pause
+exit
+
+scoreboard_crop_dropfile_cs2.bat
+
+:: Requires ImageMagick to function -- https://imagemagick.org
+:: 1920x1080 res screenshots expeceted.
+@echo off
+for %%a in (%*) do magick %%a -crop 958x541+481+269 %%a
+exit
+
+scoreboard_crop_dropfile_csgo.bat
+
+:: Requires ImageMagick to function -- https://imagemagick.org
+:: 1920x1080 res screenshots expeceted.
+@echo off
+for %%a in (%*) do magick %%a -crop 1000x590+470+370 %%a
+exit
+
+video_file_to_14fps_gif.bat
+
+@echo off
+set hres=720
+ffmpeg -i "%~1" -vf "fps=15,scale=-1:%hres%:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 1 "%~dpn1.gif"
+exit
