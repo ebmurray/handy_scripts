@@ -7,7 +7,7 @@
 
 # Set default vars
 cver="1.05"
-reldate="01 Sept 2025"
+reldate="29 Oct 2025"
 tmpfile="/tmp/upd_sh-$(date +%Y%m%d%H).txt"
 script_url="https://raw.githubusercontent.com/ebmurray/handy_scripts/main/update.sh"
 
