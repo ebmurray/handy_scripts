@@ -3,9 +3,10 @@
 
 # CHANGELOG:
 # Added checks for pacman, yum, dpkg, rpm, pip.
+# Added which errors redirected to /dev/null
 
 # Set default vars
-cver="1.04"
+cver="1.05"
 reldate="01 Sept 2025"
 tmpfile="/tmp/upd_sh-$(date +%Y%m%d%H).txt"
 script_url="https://raw.githubusercontent.com/ebmurray/handy_scripts/main/update.sh"
@@ -58,49 +59,49 @@ function check_cver () {
 
 # Package manager checks if found
 function appcheck () {
-    if [ "$(which apt|awk -F/ '{print $NF}')" == "apt" ] ; then
+    if [ "$(which apt 2>/dev/null|awk -F/ '{print $NF}')" == "apt" 2> /dev/null] ; then
         aptinst=1 ; aptproc=" apt" ;
 	else
 		aptinst=0 ; aptproc="" ;
     fi
 
-    if [ "$(which pacman|awk -F/ '{print $NF}')" == "pacman" ] ; then
+    if [ "$(which pacman 2>/dev/null|awk -F/ '{print $NF}')" == "pacman" ] ; then
         pacinst=1 ; pacproc=" pacman" ;
     else
         pacinst=0 ; pacproc="" ;
     fi
 
-    if [ "$(which dpkg|awk -F/ '{print $NF}')" == "dpkg" ] ; then
+    if [ "$(which dpkg 2>/dev/null|awk -F/ '{print $NF}')" == "dpkg" ] ; then
         dpkginst=1 ; dpkgproc=" dpkg" ;
     else
         dpkginst=0 ; dpkgproc="" ;
     fi
 
-    if [ "$(which yum|awk -F/ '{print $NF}')" == "yum" ] ; then
+    if [ "$(which yum 2>/dev/null|awk -F/ '{print $NF}')" == "yum" ] ; then
         yuminst=1 ; yumproc=" yum" ;
     else
         yuminst=0 ; yumgproc="" ;
     fi
 
-    if [ "$(which rpm|awk -F/ '{print $NF}')" == "rpm" ] ; then
+    if [ "$(which rpm 2>/dev/null|awk -F/ '{print $NF}')" == "rpm" ] ; then
         rpminst=1 ; rpmproc=" rpm" ;
     else
         rpminst=0 ; rpmgproc="" ;
     fi
 
-    if [ "$(which pip|awk -F/ '{print $NF}')" == "pip" ] ; then
+    if [ "$(which pip 2>/dev/null|awk -F/ '{print $NF}')" == "pip" ] ; then
         pipinst=1 ; pipproc=" pip" ;
     else
         pipinst=0 ; pipproc="" ;
     fi
 
-    if [ "$(which flatpak|awk -F/ '{print $NF}')" == "flatpak" ] ; then
+    if [ "$(which flatpak 2>/dev/null|awk -F/ '{print $NF}')" == "flatpak" ] ; then
         flatpakinst=1 ; flatpakproc=" flatpak" ;
 	else
 		flatpakinst=0 ; flatpakproc="" ;
     fi
 
-    if [ "$(which snap|awk -F/ '{print $NF}')" == "snap" ] ; then
+    if [ "$(which snap 2>/dev/null|awk -F/ '{print $NF}')" == "snap" ] ; then
         snapinst=1 ; snapproc=" snap" ;
 	else
 		snapinst=0 ; snapproc="" ;
