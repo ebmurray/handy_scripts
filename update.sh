@@ -4,10 +4,11 @@
 # CHANGELOG:
 # Added checks for pacman, yum, dpkg, rpm, pip.
 # Added which errors redirected to /dev/null
+# Fixed $reldate. Should be release_date throughout the document.
 
 # Set default vars
-cver="1.05"
-reldate="29 Oct 2025"
+cver="1.06"
+release_date="29 Oct 2025"
 tmpfile="/tmp/upd_sh-$(date +%Y%m%d%H).txt"
 script_url="https://raw.githubusercontent.com/ebmurray/handy_scripts/main/update.sh"
 
@@ -21,12 +22,12 @@ function rootcheck () {
 
 # Echo current version
 function echo_cver () {
-    echo "Version $cver ($reldate)" ;
+    echo "Version $cver ($release_date)" ;
 }
 
 # Check for new version
 function check_cver () {
-    wget -q -t 1 -T 5 --no-check-certificate -O $tmpfile $script_url
+    wget -q -t 1 -T 10 --no-check-certificate -O $tmpfile $script_url
     chmod +x $tmpfile
     ver_info="$($tmpfile -v)"
     CURR_FILE="$(readlink -f "$0")"
@@ -61,8 +62,8 @@ function check_cver () {
 function appcheck () {
     if [ "$(which apt 2>/dev/null|awk -F/ '{print $NF}')" == "apt" 2> /dev/null] ; then
         aptinst=1 ; aptproc=" apt" ;
-	else
-		aptinst=0 ; aptproc="" ;
+    else
+        aptinst=0 ; aptproc="" ;
     fi
 
     if [ "$(which pacman 2>/dev/null|awk -F/ '{print $NF}')" == "pacman" ] ; then
@@ -97,14 +98,14 @@ function appcheck () {
 
     if [ "$(which flatpak 2>/dev/null|awk -F/ '{print $NF}')" == "flatpak" ] ; then
         flatpakinst=1 ; flatpakproc=" flatpak" ;
-	else
-		flatpakinst=0 ; flatpakproc="" ;
+    else
+        flatpakinst=0 ; flatpakproc="" ;
     fi
 
     if [ "$(which snap 2>/dev/null|awk -F/ '{print $NF}')" == "snap" ] ; then
         snapinst=1 ; snapproc=" snap" ;
-	else
-		snapinst=0 ; snapproc="" ;
+    else
+        snapinst=0 ; snapproc="" ;
     fi
 }
 
