@@ -1,18 +1,21 @@
 #!/bin/bash
-# Update script for apt update and clean, then checks for flatpak and snap (ebmurray)
 
 # CHANGELOG:
+# Update script for apt update and clean, then checks for flatpak and snap
 # Added checks for pacman, yum, dpkg, rpm, pip.
 # Added which errors redirected to /dev/null
 # Fixed $reldate. Should be release_date throughout the document.
-# Added yay (updated to run as sudo-invoking user, not as root)
+# Added yay
+# Updated yay to run as sudo-invoking user, not as root
+# Fixed auto-update & update to respect sudo-ing user
 
 # Set default vars
-cver="1.08"
+cver="1.10"
 release_date="09 Aug 2026"
 tmpfile="/tmp/upd_sh-$(date +%Y%m%d%H).txt"
 script_url="https://raw.githubusercontent.com/ebmurray/handy_scripts/main/update.sh"
-sudo_user="${sudo_user:-$(id -un)}"
+SUDO_USER="${SUDO_USER:-$(id -un)}"
+SUDO_GROUP="${SUDO_GROUP:-$(id -ug)}"
 
 # Root check
 function rootcheck () {
@@ -32,19 +35,23 @@ function check_cver () {
     wget -q -t 1 -T 10 --no-check-certificate -O $tmpfile $script_url
     chmod +x $tmpfile
     ver_info="$($tmpfile -v)"
-    CURR_FILE="$(readlink -f "$0")"
-    latest_ver="$(echo $ver_info | awk {'print $3'})"
+    curr_file="$(readlink -f "$0")"
+    fbase="${curr_file%.*}"
+    fext="${curr_file##*.}"
+    latest_ver="$(echo $ver_info | awk {'print $2'})"
     latest_rd="$(date -d "$(echo $ver_info | awk -F"(" {'print $2'} | awk -F")" {'print $1'})" +%Y%m%d)"
     if [ "$latest_ver" != "" -a "$latest_rd" != "" ] ; then
         if [ $latest_rd -gt $(date -d "$release_date" +%Y%m%d) ] ; then
-            [ $SKIP_UPGRADE ] && echo "Upgrade v${latest_ver} available" && return
-            [ $AUTOUPDATE -eq 0 ] && echo -n "Your version: $current_version Latest version: ${latest_ver} Upgrade? [Y|n] " && read YORN || echo "Auto-updating"
+            echo "Upgrade v${latest_ver} available"
+            echo -n "Your version: $cver Latest version: ${latest_ver} Upgrade? [Y|n] " && read YORN || echo "Auto-updating"
             if [[ $YORN != N* ]] && [[ $YORN != n* ]] ; then
-                echo "Updating $current_version to $latest_ver"
-                mv $CURR_FILE ${CURR_FILE}${current_version}.$(date -d "$release_date" +%Y%m%d)
-                mv $tmpfile $CURR_FILE
+                echo "Updating $cver to $latest_ver"
+                mv $curr_file ${fbase}_v${cver}.${fext}
+                chown $SUDO_USER:$SUDO_GROUP ${fbase}_v${cver}.${fext}
+                mv $tmpfile $curr_file
+                chown $SUDO_USER:$SUDO_GROUP $curr_file
                 echo ; echo "Re-running with new version"
-                echo "" ; $CURR_FILE
+                echo "" ; $curr_file
                 exit 0
             else
                 echo "Not updating."
@@ -140,7 +147,7 @@ function upd_if_found () {
     fi
 
     if [ "$yayinst" == "1" ] ; then
-        echo ; echo "yay -Sua (as $SUDO_USER)" ; sudo -u "$SUDO_USER" -- yay -Sua
+        echo ; echo "yay -Sua (as $sudo_user)" ; sudo -u "$sudo_user" -- yay -Sua
     fi
 
     if [ "$pipinst" == "1" ] ; then
