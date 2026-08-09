@@ -5,10 +5,11 @@
 # Added checks for pacman, yum, dpkg, rpm, pip.
 # Added which errors redirected to /dev/null
 # Fixed $reldate. Should be release_date throughout the document.
+# Added yay
 
 # Set default vars
-cver="1.06"
-release_date="29 Oct 2025"
+cver="1.07"
+release_date="09 Aug 2026"
 tmpfile="/tmp/upd_sh-$(date +%Y%m%d%H).txt"
 script_url="https://raw.githubusercontent.com/ebmurray/handy_scripts/main/update.sh"
 
@@ -72,6 +73,12 @@ function appcheck () {
         pacinst=0 ; pacproc="" ;
     fi
 
+    if [ "$(which yay 2>/dev/null|awk -F/ '{print $NF}')" == "yay" ] ; then
+        yayinst=1 ; yayproc=" yay" ;
+    else
+        yayinst=0 ; yayproc="" ;
+    fi
+
     if [ "$(which dpkg 2>/dev/null|awk -F/ '{print $NF}')" == "dpkg" ] ; then
         dpkginst=1 ; dpkgproc=" dpkg" ;
     else
@@ -111,7 +118,7 @@ function appcheck () {
 
 # Update proclamation
 function updateproc () {
-    echo "Detected & updating:$aptproc$pacproc$dpkgproc$yumproc$prmproc$pipproc$flatpakproc$snapproc" ;
+    echo "Detected & updating:$aptproc$pacproc$yayproc$dpkgproc$yumproc$prmproc$pipproc$flatpakproc$snapproc" ;
 }
 
 # Update apt
@@ -129,6 +136,10 @@ function upd_if_found () {
 
     if [ "$pacinst" == "1" ] ; then
         echo ; echo "pacman -Syu" ; pacman -Syu
+    fi
+
+    if [ "$yayinst" == "1" ] ; then
+        echo ; echo "yay -Sua" ; yay -Sua
     fi
 
     if [ "$pipinst" == "1" ] ; then
