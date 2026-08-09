@@ -5,13 +5,14 @@
 # Added checks for pacman, yum, dpkg, rpm, pip.
 # Added which errors redirected to /dev/null
 # Fixed $reldate. Should be release_date throughout the document.
-# Added yay
+# Added yay (updated to run as sudo-invoking user, not as root)
 
 # Set default vars
-cver="1.07"
+cver="1.08"
 release_date="09 Aug 2026"
 tmpfile="/tmp/upd_sh-$(date +%Y%m%d%H).txt"
 script_url="https://raw.githubusercontent.com/ebmurray/handy_scripts/main/update.sh"
+sudo_user="${sudo_user:-$(id -un)}"
 
 # Root check
 function rootcheck () {
@@ -139,7 +140,7 @@ function upd_if_found () {
     fi
 
     if [ "$yayinst" == "1" ] ; then
-        echo ; echo "yay -Sua" ; yay -Sua
+        echo ; echo "yay -Sua (as $SUDO_USER)" ; sudo -u "$SUDO_USER" -- yay -Sua
     fi
 
     if [ "$pipinst" == "1" ] ; then
