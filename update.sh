@@ -11,6 +11,7 @@
 # Fixed auto-update & update to respect sudo-ing user
 # Overhaul of typos, syntax bad habits fixed
 # Updated post-update ownership behaviour to be less buggy and behave better
+# Slight fix to the yay command to reduce verbosity
 # -------------------------------------------------------------------------------------------------------------
 
 # Set default vars
@@ -153,7 +154,7 @@ function upd_if_found () {
     fi
 
     if [ "$yayinst" == "1" ] && [ -n "$SUDO_USER" ] ; then
-        echo ; echo "yay -Sua (as "$SUDO_USER":"$SUDO_GROUP")" ; sudo -u "$SUDO_USER" -- yay -Sua
+        echo ; echo "yay -Sua (as "$SUDO_USER")" ; sudo -u "$SUDO_USER" -- yay -Sua
     fi
 
     if [ "$pipinst" == "1" ] ; then
