@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# -------------------------------------------------------------------------------------------------------------
 # CHANGELOG:
 # Update script for apt update and clean, then checks for flatpak and snap
 # Added checks for pacman, yum, dpkg, rpm, pip.
@@ -8,14 +9,17 @@
 # Added yay
 # Updated yay to run as sudo-invoking user, not as root
 # Fixed auto-update & update to respect sudo-ing user
+# Overhaul of typos, syntax bad habits fixed
+# Updated post-update ownership behaviour to be less buggy and behave better
+# -------------------------------------------------------------------------------------------------------------
 
 # Set default vars
-cver="1.10"
-release_date="09 Aug 2026"
+cver="1.11"
+release_date="10 Aug 2026"
 tmpfile="/tmp/upd_sh-$(date +%Y%m%d%H).txt"
 script_url="https://raw.githubusercontent.com/ebmurray/handy_scripts/main/update.sh"
 SUDO_USER="${SUDO_USER:-$(id -un)}"
-SUDO_GROUP="${SUDO_GROUP:-$(id -ug)}"
+SUDO_GROUP="${SUDO_GROUP:-$(id -gn "$SUDO_USER")}"
 
 # Root check
 function rootcheck () {
@@ -27,14 +31,15 @@ function rootcheck () {
 
 # Echo current version
 function echo_cver () {
-    echo "Version $cver ($release_date)" ;
+    echo "Version "$cver" ($release_date)" ;
 }
 
 # Check for new version
 function check_cver () {
-    wget -q -t 1 -T 10 --no-check-certificate -O $tmpfile $script_url
-    chmod +x $tmpfile
-    ver_info="$($tmpfile -v)"
+    wget -q -t 1 -T 10 --no-check-certificate -O "$tmpfile" "$script_url"
+    chown "$SUDO_USER":"$SUDO_GROUP" "$tmpfile"
+    chmod 0744 "$tmpfile"
+    ver_info="$("$tmpfile" -v)"
     curr_file="$(readlink -f "$0")"
     fbase="${curr_file%.*}"
     fext="${curr_file##*.}"
@@ -43,27 +48,28 @@ function check_cver () {
     if [ "$latest_ver" != "" -a "$latest_rd" != "" ] ; then
         if [ $latest_rd -gt $(date -d "$release_date" +%Y%m%d) ] ; then
             echo "Upgrade v${latest_ver} available"
-            echo -n "Your version: $cver Latest version: ${latest_ver} Upgrade? [Y|n] " && read YORN || echo "Auto-updating"
+            echo
+            echo "If you DO NOT want to update file owner:group to sudoer, use N/n below, then use "su -" or "sudo -i" and re-run the script."
+            echo
+            echo -n "Your version: $cver - Latest version: ${latest_ver} - Upgrade? [Y|n] " && read YORN
             if [[ $YORN != N* ]] && [[ $YORN != n* ]] ; then
-                echo "Updating $cver to $latest_ver"
-                mv $curr_file ${fbase}_v${cver}.${fext}
-                chown $SUDO_USER:$SUDO_GROUP ${fbase}_v${cver}.${fext}
-                mv $tmpfile $curr_file
-                chown $SUDO_USER:$SUDO_GROUP $curr_file
+                echo "Updating "$cver" to "$latest_ver""
+                mv "$curr_file" "${fbase}_v${cver}.${fext}"
+                mv "$tmpfile" "$curr_file"
                 echo ; echo "Re-running with new version"
-                echo "" ; $curr_file
+                echo "" ; "$curr_file"
                 exit 0
             else
                 echo "Not updating."
-                rm -f $tmpfile
+                rm -f "$tmpfile"
             fi
         else
             echo "Using latest revision."
-            rm -f $tmpfile
+            rm -f "$tmpfile"
         fi
     else
         echo "Unable to determine latest revision. Continuing..."
-        rm -f $tmpfile
+        rm -f "$tmpfile"
     fi
 }
 
@@ -96,13 +102,13 @@ function appcheck () {
     if [ "$(which yum 2>/dev/null|awk -F/ '{print $NF}')" == "yum" ] ; then
         yuminst=1 ; yumproc=" yum" ;
     else
-        yuminst=0 ; yumgproc="" ;
+        yuminst=0 ; yumproc="" ;
     fi
 
     if [ "$(which rpm 2>/dev/null|awk -F/ '{print $NF}')" == "rpm" ] ; then
         rpminst=1 ; rpmproc=" rpm" ;
     else
-        rpminst=0 ; rpmgproc="" ;
+        rpminst=0 ; rpmproc="" ;
     fi
 
     if [ "$(which pip 2>/dev/null|awk -F/ '{print $NF}')" == "pip" ] ; then
@@ -126,7 +132,7 @@ function appcheck () {
 
 # Update proclamation
 function updateproc () {
-    echo "Detected & updating:$aptproc$pacproc$yayproc$dpkgproc$yumproc$prmproc$pipproc$flatpakproc$snapproc" ;
+    echo "Detected & updating:$aptproc$pacproc$yayproc$dpkgproc$yumproc$rpmproc$pipproc$flatpakproc$snapproc" ;
 }
 
 # Update apt
@@ -146,8 +152,8 @@ function upd_if_found () {
         echo ; echo "pacman -Syu" ; pacman -Syu
     fi
 
-    if [ "$yayinst" == "1" ] ; then
-        echo ; echo "yay -Sua (as $sudo_user)" ; sudo -u "$sudo_user" -- yay -Sua
+    if [ "$yayinst" == "1" ] && [ -n "$SUDO_USER" ] ; then
+        echo ; echo "yay -Sua (as "$SUDO_USER":"$SUDO_GROUP")" ; sudo -u "$SUDO_USER" -- yay -Sua
     fi
 
     if [ "$pipinst" == "1" ] ; then
